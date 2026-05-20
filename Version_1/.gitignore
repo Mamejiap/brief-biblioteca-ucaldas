@@ -1,0 +1,51 @@
+# Entorno virtual
+venv/
+env/
+ENV/
+.venv
+Version_1/venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Instalación de paquetes
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Archivos de configuración local
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Caché
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Base de datos (para versión futura)
+*.db
+*.sqlite
+*.sqlite3
+
+# Node (si se agrega frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
