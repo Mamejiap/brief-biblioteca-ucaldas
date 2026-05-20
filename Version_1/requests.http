@@ -1,0 +1,98 @@
+### Variables
+@baseUrl = http://localhost:8000
+
+### ==================== ENDPOINTS GENERALES ====================
+
+### Verificar salud de la API
+GET {{baseUrl}}/health
+
+### Endpoint de bienvenida
+GET {{baseUrl}}/
+
+### ==================== ENDPOINTS DE LIBROS ====================
+
+### Listar todos los libros
+GET {{baseUrl}}/libros
+
+### ==================== ENDPOINTS DE PRÉSTAMOS ====================
+
+### Crear un nuevo préstamo para el estudiante 1 con el libro 1
+POST {{baseUrl}}/prestamos
+Content-Type: application/json
+
+{
+  "estudiante_id": 1,
+  "libro_id": 1,
+  "dias_prestamo": 14
+}
+
+### Crear un segundo préstamo para el estudiante 2 con el libro 2
+POST {{baseUrl}}/prestamos
+Content-Type: application/json
+
+{
+  "estudiante_id": 2,
+  "libro_id": 2,
+  "dias_prestamo": 7
+}
+
+### Crear un tercer préstamo para el estudiante 3 con el libro 3
+POST {{baseUrl}}/prestamos
+Content-Type: application/json
+
+{
+  "estudiante_id": 3,
+  "libro_id": 3,
+  "dias_prestamo": 21
+}
+
+### Consultar todos los préstamos vigentes
+GET {{baseUrl}}/prestamos/vigentes
+
+### Registrar devolución del préstamo 1
+POST {{baseUrl}}/prestamos/1/devolver
+
+### Registrar devolución del préstamo 2
+POST {{baseUrl}}/prestamos/2/devolver
+
+### ==================== CASOS DE ERROR ====================
+
+### Error: Estudiante no existe
+POST {{baseUrl}}/prestamos
+Content-Type: application/json
+
+{
+  "estudiante_id": 999,
+  "libro_id": 1,
+  "dias_prestamo": 14
+}
+
+### Error: Libro no existe
+POST {{baseUrl}}/prestamos
+Content-Type: application/json
+
+{
+  "estudiante_id": 1,
+  "libro_id": 999,
+  "dias_prestamo": 14
+}
+
+### Error: Días inválidos (valor negativo)
+POST {{baseUrl}}/prestamos
+Content-Type: application/json
+
+{
+  "estudiante_id": 1,
+  "libro_id": 1,
+  "dias_prestamo": -5
+}
+
+### Error: Intentar devolver un préstamo inexistente
+POST {{baseUrl}}/prestamos/999/devolver
+
+### Error: Intentar devolver dos veces el mismo libro
+# Primero devolver:
+POST {{baseUrl}}/prestamos/1/devolver
+
+# Luego intentar devolver de nuevo (descomentar después de ejecutar el anterior):
+# POST {{baseUrl}}/prestamos/1/devolver
