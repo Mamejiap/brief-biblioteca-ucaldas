@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from app.api.routers import libros, estudiantes, prestamos, reservas
 from app.api.error_handlers import register_exception_handlers
+from app.database import Base, engine
+
+# Crear todas las tablas en la BD al arrancar (si no existen ya)
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Biblioteca UCaldas API",

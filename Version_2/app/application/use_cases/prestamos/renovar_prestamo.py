@@ -1,11 +1,10 @@
 """
-Caso de uso: Renovar Préstamo
-  RN7 — si hay reservas pendientes para el libro, la renovación se deniega
-  RN6 — el nuevo plazo usa las mismas reglas (15 días o 3 días si alta demanda)
+Caso de uso: Renovar Prestamo
+  RN7 - si hay reservas pendientes para el libro, la renovacion se deniega
+  RN6 - el nuevo plazo usa las mismas reglas (15 dias o 3 dias si alta demanda)
 """
-from datetime import timedelta
+from datetime import timedelta, date
 from typing import Optional
-from datetime import date
 
 from app.domain.entities.prestamo import EstadoPrestamo
 from app.domain.repositories.prestamo_repository import IPrestamoRepository
@@ -48,13 +47,12 @@ class RenovarPrestamo:
         if not libro:
             raise LibroNoEncontrado(ejemplar.libro_id)
 
-        # ── RN7 — Verificar lista de espera ───────────────────────────────────
         reservas = self._reserva_repo.listar_pendientes_por_libro(libro.id)
         if reservas:
             raise RenovacionBloqueadaPorReserva(libro.id)
 
-        # ── Extender fecha de devolución ──────────────────────────────────────
         hoy = fecha_referencia or date.today()
         prestamo.fecha_devolucion_esperada = hoy + timedelta(days=libro.plazo_dias)
-        prestamo.estado = EstadoPrestamo.ACTIVO  # por si estaba vencido
-        return self._prestamo_repo.actualizar(prestamo)
+        prestamo.estado = EstadoPrestamo.ACTIVO
+        self._prestamo_repo.actualizar(prestamo)
+        return prestamo

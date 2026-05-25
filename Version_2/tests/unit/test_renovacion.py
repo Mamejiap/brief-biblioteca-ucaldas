@@ -1,6 +1,6 @@
 """
 Tests unitarios para RenovarPrestamo.
-Regla cubierta: RN7 — renovación bloqueada si hay lista de espera
+Regla cubierta: RN7 renovacion bloqueada si hay lista de espera
 """
 import uuid
 import pytest
@@ -30,11 +30,11 @@ class TestRenovarPrestamo:
             self.prestamo_repo, self.ejemplar_repo,
             self.libro_repo, self.reserva_repo
         )
-        # Datos base
         self.libro = Libro(id="LIB-001", titulo="Clean Code", autor="Martin",
                            sala="General", alta_demanda=False)
         self.libro_repo.guardar(self.libro)
-        self.ej = Ejemplar(id="EJ-001", libro_id="LIB-001", estado=EstadoEjemplar.PRESTADO)
+        self.ej = Ejemplar(id="EJ-001", libro_id="LIB-001",
+                           estado=EstadoEjemplar.PRESTADO)
         self.ejemplar_repo.guardar(self.ej)
         self.prestamo = Prestamo(
             id=str(uuid.uuid4()),
@@ -47,12 +47,10 @@ class TestRenovarPrestamo:
         self.prestamo_repo.guardar(self.prestamo)
 
     def test_renovacion_sin_lista_de_espera(self):
-        """Sin reservas pendientes, la renovación extiende la fecha en 15 días."""
         p = self.uc.execute(self.prestamo.id, fecha_referencia=HOY)
         assert p.fecha_devolucion_esperada == HOY + timedelta(days=15)
 
     def test_renovacion_bloqueada_si_hay_reserva(self):
-        """RN7: existe una reserva pendiente → renovación denegada con 409."""
         reserva = Reserva(
             id=str(uuid.uuid4()),
             estudiante_id="EST-002",
@@ -61,17 +59,16 @@ class TestRenovarPrestamo:
             estado=EstadoReserva.PENDIENTE,
         )
         self.reserva_repo.guardar(reserva)
-
         with pytest.raises(RenovacionBloqueadaPorReserva) as exc_info:
             self.uc.execute(self.prestamo.id, fecha_referencia=HOY)
         assert exc_info.value.libro_id == "LIB-001"
 
     def test_renovacion_de_libro_alta_demanda_da_3_dias(self):
-        """RN7 + RN6: renovación de libro alta demanda extiende solo 3 días."""
         libro_ad = Libro(id="LIB-AD", titulo="SCRUM", autor="Rubin",
                          sala="Reserva", alta_demanda=True)
         self.libro_repo.guardar(libro_ad)
-        ej_ad = Ejemplar(id="EJ-AD", libro_id="LIB-AD", estado=EstadoEjemplar.PRESTADO)
+        ej_ad = Ejemplar(id="EJ-AD", libro_id="LIB-AD",
+                         estado=EstadoEjemplar.PRESTADO)
         self.ejemplar_repo.guardar(ej_ad)
         prestamo_ad = Prestamo(
             id=str(uuid.uuid4()),
@@ -82,10 +79,9 @@ class TestRenovarPrestamo:
             estado=EstadoPrestamo.ACTIVO,
         )
         self.prestamo_repo.guardar(prestamo_ad)
-
         p = self.uc.execute(prestamo_ad.id, fecha_referencia=HOY)
         assert p.fecha_devolucion_esperada == HOY + timedelta(days=3)
 
     def test_prestamo_inexistente_lanza_excepcion(self):
         with pytest.raises(PrestamoNoEncontrado):
-            self.uc.execute("ID-FALSO", fecha_referencia=HOY)
+            self.uc.execute("prestamo-que-no-existe")

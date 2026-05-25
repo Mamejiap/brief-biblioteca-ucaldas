@@ -1,43 +1,54 @@
 """
-Inyección de dependencias.
-Los repositorios son singletons que viven durante toda la vida del proceso
-(persistencia en memoria).
+Inyeccion de dependencias.
+
+Para cada request de FastAPI se abre una sesion de BD (get_db) y se construyen
+los repositorios SQLAlchemy que la usan. Al terminar el request la sesion se
+cierra automaticamente gracias al generador get_db().
+
+Los repositorios en memoria (InMemory*) se conservan unicamente para la suite
+de tests; no se instancian aqui.
 """
-from functools import lru_cache
+from fastapi import Depends
+from sqlalchemy.orm import Session
 
-from app.infrastructure.repositories.in_memory_libro_repository import (
-    InMemoryLibroRepository,
-    InMemoryEjemplarRepository,
+from app.database import get_db
+from app.infrastructure.repositories.sqlalchemy_libro_repository import (
+    SQLAlchemyEjemplarRepository,
+    SQLAlchemyLibroRepository,
 )
-from app.infrastructure.repositories.in_memory_estudiante_repository import InMemoryEstudianteRepository
-from app.infrastructure.repositories.in_memory_prestamo_repository import InMemoryPrestamoRepository
-from app.infrastructure.repositories.in_memory_multa_repository import InMemoryMultaRepository
-from app.infrastructure.repositories.in_memory_reserva_repository import InMemoryReservaRepository
+from app.infrastructure.repositories.sqlalchemy_estudiante_repository import (
+    SQLAlchemyEstudianteRepository,
+)
+from app.infrastructure.repositories.sqlalchemy_prestamo_repository import (
+    SQLAlchemyPrestamoRepository,
+)
+from app.infrastructure.repositories.sqlalchemy_multa_repository import (
+    SQLAlchemyMultaRepository,
+)
+from app.infrastructure.repositories.sqlalchemy_reserva_repository import (
+    SQLAlchemyReservaRepository,
+)
 
 
-# Instancias únicas compartidas por toda la aplicación
-_libro_repo = InMemoryLibroRepository()
-_ejemplar_repo = InMemoryEjemplarRepository()
-_estudiante_repo = InMemoryEstudianteRepository()
-_prestamo_repo = InMemoryPrestamoRepository()
-_multa_repo = InMemoryMultaRepository()
-_reserva_repo = InMemoryReservaRepository()
+def get_libro_repo(db: Session = Depends(get_db)) -> SQLAlchemyLibroRepository:
+    return SQLAlchemyLibroRepository(db)
 
 
-def get_libro_repo() -> InMemoryLibroRepository:
-    return _libro_repo
+def get_ejemplar_repo(db: Session = Depends(get_db)) -> SQLAlchemyEjemplarRepository:
+    return SQLAlchemyEjemplarRepository(db)
 
-def get_ejemplar_repo() -> InMemoryEjemplarRepository:
-    return _ejemplar_repo
 
-def get_estudiante_repo() -> InMemoryEstudianteRepository:
-    return _estudiante_repo
+def get_estudiante_repo(db: Session = Depends(get_db)) -> SQLAlchemyEstudianteRepository:
+    return SQLAlchemyEstudianteRepository(db)
 
-def get_prestamo_repo() -> InMemoryPrestamoRepository:
-    return _prestamo_repo
 
-def get_multa_repo() -> InMemoryMultaRepository:
-    return _multa_repo
+def get_prestamo_repo(db: Session = Depends(get_db)) -> SQLAlchemyPrestamoRepository:
+    return SQLAlchemyPrestamoRepository(db)
 
-def get_reserva_repo() -> InMemoryReservaRepository:
-    return _reserva_repo
+
+def get_multa_repo(db: Session = Depends(get_db)) -> SQLAlchemyMultaRepository:
+    return SQLAlchemyMultaRepository(db)
+
+
+def get_reserva_repo(db: Session = Depends(get_db)) -> SQLAlchemyReservaRepository:
+    return SQLAlchemyReservaRepository(db)

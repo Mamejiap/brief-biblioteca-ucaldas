@@ -11,6 +11,5 @@ class CancelarReserva:
         reserva = self._reserva_repo.obtener_por_id(reserva_id)
         if not reserva:
             raise ReservaNoEncontrada(reserva_id)
-
         reserva.estado = EstadoReserva.CANCELADA
         self._reserva_repo.actualizar(reserva)

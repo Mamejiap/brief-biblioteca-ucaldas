@@ -10,7 +10,7 @@ from app.application.use_cases.prestamos.registrar_devolucion import RegistrarDe
 from app.application.use_cases.prestamos.renovar_prestamo import RenovarPrestamo
 from app.application.use_cases.prestamos.listar_vencidos import ListarVencidos
 
-router = APIRouter(prefix="/api/prestamos", tags=["Préstamos"])
+router = APIRouter(prefix="/api/prestamos", tags=["Prestamos"])
 
 
 def _prestamo_out(p) -> PrestamoOut:

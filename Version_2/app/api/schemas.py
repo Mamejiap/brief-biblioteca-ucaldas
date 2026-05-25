@@ -1,15 +1,24 @@
 """
 Schemas Pydantic para request/response de la API.
 Separados de las entidades de dominio para no acoplar capas.
+
+from_attributes=True (ORM mode) se activa en todos los schemas de salida
+para que Pydantic pueda leer atributos desde instancias ORM o dataclasses
+de dominio indistintamente.
 """
 from datetime import date
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.domain.entities.estudiante import TipoEstudiante
 from app.domain.entities.libro import EstadoEjemplar
 from app.domain.entities.prestamo import EstadoPrestamo
 from app.domain.entities.reserva import EstadoReserva
+
+
+class _OutBase(BaseModel):
+    """Base para todos los schemas de respuesta. Activa el modo ORM."""
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── Libro ─────────────────────────────────────────────────────────────────────
@@ -24,12 +33,12 @@ class LibroCreate(BaseModel):
 class EjemplarCreate(BaseModel):
     id: str = Field(..., min_length=1)
 
-class EjemplarOut(BaseModel):
+class EjemplarOut(_OutBase):
     id: str
     libro_id: str
     estado: EstadoEjemplar
 
-class LibroOut(BaseModel):
+class LibroOut(_OutBase):
     id: str
     titulo: str
     autor: str
@@ -37,7 +46,7 @@ class LibroOut(BaseModel):
     alta_demanda: bool
     plazo_dias: int
 
-class LibroDetalle(BaseModel):
+class LibroDetalle(_OutBase):
     id: str
     titulo: str
     autor: str
@@ -47,7 +56,7 @@ class LibroDetalle(BaseModel):
     ejemplares: list[EjemplarOut]
     ejemplares_disponibles: int
 
-class LibroCatalogo(BaseModel):
+class LibroCatalogo(_OutBase):
     id: str
     titulo: str
     autor: str
@@ -67,7 +76,7 @@ class EstudianteCreate(BaseModel):
     semestre: int = Field(..., ge=1)
     tipo: TipoEstudiante
 
-class EstudianteOut(BaseModel):
+class EstudianteOut(_OutBase):
     id: str
     nombre: str
     programa: str
@@ -83,7 +92,7 @@ class PrestamoCreate(BaseModel):
     ejemplar_id: str = Field(..., min_length=1)
     fecha_prestamo: Optional[date] = None   # inyectable para tests
 
-class PrestamoOut(BaseModel):
+class PrestamoOut(_OutBase):
     id: str
     estudiante_id: str
     ejemplar_id: str
@@ -95,7 +104,7 @@ class PrestamoOut(BaseModel):
 
 # ── Multa ─────────────────────────────────────────────────────────────────────
 
-class MultaOut(BaseModel):
+class MultaOut(_OutBase):
     id: str
     prestamo_id: str
     estudiante_id: str
@@ -106,7 +115,7 @@ class MultaOut(BaseModel):
 
 # ── Devolución ────────────────────────────────────────────────────────────────
 
-class DevolucionOut(BaseModel):
+class DevolucionOut(_OutBase):
     prestamo_id: str
     dias_retraso: int
     multa: Optional[MultaOut]
@@ -114,7 +123,7 @@ class DevolucionOut(BaseModel):
 
 # ── Historial ─────────────────────────────────────────────────────────────────
 
-class HistorialOut(BaseModel):
+class HistorialOut(_OutBase):
     estudiante: EstudianteOut
     prestamos: list[PrestamoOut]
     multas: list[MultaOut]
@@ -127,7 +136,7 @@ class ReservaCreate(BaseModel):
     estudiante_id: str = Field(..., min_length=1)
     libro_id: str = Field(..., min_length=1)
 
-class ReservaOut(BaseModel):
+class ReservaOut(_OutBase):
     id: str
     estudiante_id: str
     libro_id: str
