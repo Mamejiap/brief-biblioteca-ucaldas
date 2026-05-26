@@ -414,22 +414,36 @@ curl -s $BASE_SIN_IA/estudiantes/NO-EXISTE-999/historial | jq
 
 Llena esta tabla con lo que observaste al correr cada prueba en ambas versiones. Pegala en tu `bitacora.md`.
 
+| Prueba                         | Regla | Esperado        | Sin IA — HTTP | Sin IA — body util | 
+|--------------------------------|-------|-----------------|---------------|--------------------|
+| RN1-B cuarto prestamo pregrado | RN1   | 409             |               |                    |  
+| RN2-B sexto prestamo posgrado  | RN2   | 409             |               |                    |  
+| RN5-B ejemplar ya prestado     | RN5   | 409             |               |                    |  
+| RN6-A plazo libro normal       | RN6   | fecha + 15 dias |               |                    |  
+| RN6-B plazo alta demanda       | RN6   | fecha + 3 dias  |               |                    |  
+| RN3 prestamo con vencido       | RN3   | 409             |               |                    |  
+| RN4-B prestamo con multa       | RN4   | 409             |               |                    |  
+| RN8 calculo de multa           | RN8   | N x 2000        |               |                    |  
+| VAL-1 body vacio               | —     | 400             |               |                    |  
+| VAL-2 estudiante inexistente   | —     | 404             |               |                    |  
+| VAL-3 ejemplar inexistente     | —     | 404             |               |                    |  
+| VAL-4 tipo incorrecto          | —     | 400             |               |                    |  
+
+
 | Prueba                         | Regla | Esperado        | Sin IA — HTTP | Sin IA — body util | Con IA — HTTP | Con IA — body util |
 |--------------------------------|-------|-----------------|---------------|--------------------|---------------|--------------------|
-| RN1-B cuarto prestamo pregrado | RN1 | 409| 422 | Si           |               |                    |
-| RN2-B sexto prestamo posgrado | RN2 | 409 | 422 | Si | | |
-| RN5-B ejemplar ya prestado | RN5 | 409 | 400 | No | | |
-| RN6-A plazo libro normal | RN6 | fecha + 15 dias | 400 | No | | |
-| RN6-B plazo alta demanda | RN6 | fecha + 3 dias | 201 | No | | |
- RN3 prestamo con vencido | RN3 | 409 | N/A | N/A <br>Limitación: API ignora fechaPrestamo | | |
-| RN4-B prestamo con multa | RN4 | 409 | N/A | N/A <br>Imposible: sin multa | | |
-| RN7 renovacion con lista espera | RN7 | 409 | 404 | Si <br>Endpoint /renovar no existe | | |
-| VAL-1 body vacio | — | 400 | 422 | Si <br>Campos requeridos: estudiante_id, libro_id | | |
-| VAL-2 estudiante inexistente | — | 404 | 404 | Si <br>Mensaje: "Estudiante con ID 999 no encontrado" | | |
-| VAL-3 libro inexistente | — | 404 | 404 | Si <br>Mensaje: "Libro con ID 999 no encontrado" | | |
-| VAL-4 tipo incorrecto | — | 400 | 422 | Si <braEndpoint /estudiantes/{id}/historial no existe> | | |
-| VAL-5 historial inexistente | — | 404 | 404 | Si <br>Endpoint /estudiantes/{id}/historial no existe | | |
-
+| RN1-B cuarto prestamo pregrado | RN1   | 409             |               |                    |               |                    |
+| RN2-B sexto prestamo posgrado  | RN2   | 409             |               |                    |               |                    |
+| RN5-B ejemplar ya prestado     | RN5   | 409             |               |                    |               
+| RN6-A plazo libro normal       | RN6   | fecha + 15 dias |               |                    |               
+| RN6-B plazo alta demanda       | RN6   | fecha + 3 dias  |               |                    |               
+| RN3 prestamo con vencido       | RN3   | 409             |               |                    |               
+| RN4-B prestamo con multa       | RN4   | 409             |               |                    |               
+| RN8 calculo de multa           | RN8   | N x 2000        |               |                    |               
+| VAL-1 body vacio               | —     | 400             |               |                    |               
+| VAL-2 estudiante inexistente   | —     | 404             |               |                    |               
+| VAL-3 ejemplar inexistente     | —     | 404             |               |                    |               |                    |
+| VAL-4 tipo incorrecto          | —     | 400             |               |                    |               |                    |
 **Columna "body util":** escribe `Si` si la respuesta incluye un mensaje que explica por que fallo, o `No` si solo devuelve el codigo sin explicacion.
 
 ---
