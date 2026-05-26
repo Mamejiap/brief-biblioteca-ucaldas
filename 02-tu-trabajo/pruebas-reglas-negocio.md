@@ -40,7 +40,7 @@ Estos datos son la base para todas las pruebas siguientes. Ejecutalos contra **c
 
 ```bash
 # Estudiante de pregrado
-curl -s -X POST $BASE_CON_IA/estudiantes \
+curl -s -X POST $BASE_SIN_IA/estudiantes \
   -H "Content-Type: application/json" \
   -d '{
     "id": "EST-PRE-01",
@@ -51,7 +51,7 @@ curl -s -X POST $BASE_CON_IA/estudiantes \
   }' | jq
 
 # Estudiante de posgrado
-curl -s -X POST $BASE_CON_IA/estudiantes \
+curl -s -X POST $BASE_SIN_IA/estudiantes \
   -H "Content-Type: application/json" \
   -d '{
     "id": "EST-POS-01",
@@ -68,7 +68,7 @@ curl -s -X POST $BASE_CON_IA/estudiantes \
 
 ```bash
 # Libro normal (plazo 15 dias)
-curl -s -X POST $BASE_CON_IA/libros \
+curl -s -X POST $BASE_SIN_IA/libros \
   -H "Content-Type: application/json" \
   -d '{
     "id": "LIB-001",
@@ -79,7 +79,7 @@ curl -s -X POST $BASE_CON_IA/libros \
   }' | jq
 
 # Libro de alta demanda (plazo 3 dias)
-curl -s -X POST $BASE_CON_IA/libros \
+curl -i -X POST $BASE_SIN_IA/libros \
   -H "Content-Type: application/json" \
   -d '{
     "id": "LIB-002",
@@ -91,13 +91,13 @@ curl -s -X POST $BASE_CON_IA/libros \
 
 # Ejemplares del libro normal
 for i in 01 02 03 04 05 06; do
-  curl -s -X POST $BASE_CON_IA/libros/LIB-001/ejemplares \
+  curl -s -X POST $BASE_SIN_IA/libros/LIB-001/ejemplares \
     -H "Content-Type: application/json" \
     -d "{\"id\": \"EJ-001-$i\"}" | jq
 done
 
 # Ejemplar del libro de alta demanda
-curl -s -X POST $BASE_CON_IA/libros/LIB-002/ejemplares \
+curl -s -X POST $BASE_SIN_IA/libros/LIB-002/ejemplares \
   -H "Content-Type: application/json" \
   -d '{"id": "EJ-002-01"}' | jq
 ```
@@ -114,17 +114,17 @@ curl -s -X POST $BASE_CON_IA/libros/LIB-002/ejemplares \
 
 ```bash
 # Prestamo 1
-curl -s -X POST $BASE_CON_IA/prestamos \
+curl -s -X POST $BASE_SIN_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-001-01"}' | jq
 
 # Prestamo 2
-curl -s -X POST $BASE_CON_IA/prestamos \
+curl -s -X POST $BASE_SIN_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-001-02"}' | jq
 
 # Prestamo 3
-curl -s -X POST $BASE_CON_IA/prestamos \
+curl -s -X POST $BASE_SIN_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-001-03"}' | jq
 ```
@@ -134,7 +134,7 @@ curl -s -X POST $BASE_CON_IA/prestamos \
 ### Prueba RN1-B: intentar el cuarto prestamo (debe fallar)
 
 ```bash
-curl -s -X POST $BASE_CON_IA/prestamos \
+curl -s -X POST $BASE_SIN_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-001-04"}' | jq
 ```
@@ -150,7 +150,7 @@ HTTP 409 Conflict
 
 **Preguntas para anotar en tu bitacora:**
 - ¿Que codigo HTTP devolvio tu version sin IA? ¿Y la con IA?
-- ¿Cual de las dos incluye un mensaje de error legible?
+- ¿Cual de las dos incluye un mensaje de error legible? 
 - ¿El cuerpo de la respuesta identifica por que fallo?
 
 ---
@@ -163,7 +163,7 @@ HTTP 409 Conflict
 
 ```bash
 for i in 01 02 03 04 05; do
-  curl -s -X POST $BASE_CON_IA/prestamos \
+  curl -s -X POST $BASE_SIN_IA/prestamos \
     -H "Content-Type: application/json" \
     -d "{\"estudianteId\": \"EST-POS-01\", \"ejemplarId\": \"EJ-001-0$i\"}" | jq
 done
@@ -174,7 +174,7 @@ done
 ### Prueba RN2-B: intentar el sexto prestamo (debe fallar)
 
 ```bash
-curl -s -X POST $BASE_CON_IA/prestamos \
+curl -s -X POST $BASE_SIN_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-POS-01", "ejemplarId": "EJ-001-06"}' | jq
 ```
@@ -182,6 +182,8 @@ curl -s -X POST $BASE_CON_IA/prestamos \
 **Resultado esperado:** `409 Conflict` con mensaje sobre limite de posgrado.
 
 **Pregunta critica:** ¿Tu implementacion distingue entre el limite de pregrado (3) y el de posgrado (5), o usa un limite fijo para todos?
+
+- En la Version_1 no lo hace
 
 ---
 
@@ -192,7 +194,7 @@ curl -s -X POST $BASE_CON_IA/prestamos \
 ### Prueba RN5-A: crear prestamo del ejemplar (debe funcionar)
 
 ```bash
-curl -s -X POST $BASE_CON_IA/prestamos \
+curl -s -X POST $BASE_SIN_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-POS-01", "ejemplarId": "EJ-002-01"}' | jq
 ```
@@ -202,7 +204,7 @@ curl -s -X POST $BASE_CON_IA/prestamos \
 ### Prueba RN5-B: intentar prestar el mismo ejemplar (debe fallar)
 
 ```bash
-curl -s -X POST $BASE_CON_IA/prestamos \
+curl -s -X POST $BASE_SIN_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-002-01"}' | jq
 ```
@@ -218,7 +220,7 @@ curl -s -X POST $BASE_CON_IA/prestamos \
 ### Prueba RN6-A: prestamo de libro normal
 
 ```bash
-curl -s -X POST $BASE_CON_IA/prestamos \
+curl -s -X POST $BASE_SIN_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-POS-01", "ejemplarId": "EJ-001-01"}' | jq '.fechaDevolucion, .plazo'
 ```
@@ -230,7 +232,7 @@ curl -s -X POST $BASE_CON_IA/prestamos \
 ```bash
 # Primero libera EJ-002-01 si sigue prestado
 # Luego:
-curl -s -X POST $BASE_CON_IA/prestamos \
+curl -s -X POST $BASE_SIN_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-POS-01", "ejemplarId": "EJ-002-01"}' | jq '.fechaDevolucion, .plazo'
 ```
@@ -263,7 +265,7 @@ Compara el resultado con lo que devolvio la API.
 >
 > **Opcion A** — Si tu API acepta fecha de prestamo en el body:
 > ```bash
-> curl -s -X POST $BASE_CON_IA/prestamos \
+> curl -s -X POST $BASE_SIN_IA/prestamos \
 >   -H "Content-Type: application/json" \
 >   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-001-01", "fechaPrestamo": "2025-01-01"}' | jq
 > ```
@@ -278,7 +280,7 @@ Compara el resultado con lo que devolvio la API.
 Una vez que tengas un prestamo vencido registrado para EST-PRE-01:
 
 ```bash
-curl -s -X POST $BASE_CON_IA/prestamos \
+curl -s -X POST $BASE_SIN_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-001-05"}' | jq
 ```
@@ -297,7 +299,7 @@ curl -s -X POST $BASE_CON_IA/prestamos \
 
 ```bash
 # Registrar devolucion de un prestamo vencido
-curl -s -X PUT $BASE_CON_IA/prestamos/ID_DEL_PRESTAMO/devolucion \
+curl -s -X PUT $BASE_SIN_IA/prestamos/ID_DEL_PRESTAMO/devolucion \
   -H "Content-Type: application/json" | jq '.multa'
 ```
 
@@ -306,7 +308,7 @@ curl -s -X PUT $BASE_CON_IA/prestamos/ID_DEL_PRESTAMO/devolucion \
 ### Prueba RN4-B: intento de prestamo con multa pendiente (debe fallar)
 
 ```bash
-curl -s -X POST $BASE_CON_IA/prestamos \
+curl -s -X POST $BASE_SIN_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-001-05"}' | jq
 ```
@@ -323,7 +325,7 @@ Si lograste simular fechas vencidas, verifica el calculo:
 
 ```bash
 # Registrar devolucion de prestamo vencido X dias
-curl -s -X PUT $BASE_CON_IA/prestamos/ID_DEL_PRESTAMO/devolucion \
+curl -s -X PUT $BASE_SIN_IA/prestamos/ID_DEL_PRESTAMO/devolucion \
   -H "Content-Type: application/json" | jq
 ```
 
@@ -346,7 +348,7 @@ curl -s -X PUT $BASE_CON_IA/prestamos/ID_DEL_PRESTAMO/devolucion \
 
 ```bash
 # Intentar renovar un prestamo que tiene otro estudiante en espera
-curl -s -X PUT $BASE_CON_IA/prestamos/ID_DEL_PRESTAMO/renovar \
+curl -s -X PUT $BASE_SIN_IA/prestamos/ID_DEL_PRESTAMO/renovar \
   -H "Content-Type: application/json" | jq
 ```
 
@@ -361,7 +363,7 @@ Estas pruebas verifican que tu API maneja correctamente las entradas malformadas
 ### VAL-1: Body vacio
 
 ```bash
-curl -s -X POST $BASE_CON_IA/prestamos \
+curl -s -X POST $BASE_SIN_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{}' | jq
 ```
@@ -371,7 +373,7 @@ curl -s -X POST $BASE_CON_IA/prestamos \
 ### VAL-2: Estudiante inexistente
 
 ```bash
-curl -s -X POST $BASE_CON_IA/prestamos \
+curl -s -X POST $BASE_SIN_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "NO-EXISTE-999", "ejemplarId": "EJ-001-01"}' | jq
 ```
@@ -381,7 +383,7 @@ curl -s -X POST $BASE_CON_IA/prestamos \
 ### VAL-3: Ejemplar inexistente
 
 ```bash
-curl -s -X POST $BASE_CON_IA/prestamos \
+curl -s -X POST $BASE_SIN_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "NO-EXISTE-999"}' | jq
 ```
@@ -391,7 +393,7 @@ curl -s -X POST $BASE_CON_IA/prestamos \
 ### VAL-4: Tipo de dato incorrecto
 
 ```bash
-curl -s -X POST $BASE_CON_IA/prestamos \
+curl -s -X POST $BASE_SIN_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": 12345, "ejemplarId": true}' | jq
 ```
@@ -401,7 +403,7 @@ curl -s -X POST $BASE_CON_IA/prestamos \
 ### VAL-5: Consultar prestamos de estudiante inexistente
 
 ```bash
-curl -s $BASE_CON_IA/estudiantes/NO-EXISTE-999/historial | jq
+curl -s $BASE_SIN_IA/estudiantes/NO-EXISTE-999/historial | jq
 ```
 
 **Resultado esperado:** `404 Not Found`.
@@ -414,18 +416,19 @@ Llena esta tabla con lo que observaste al correr cada prueba en ambas versiones.
 
 | Prueba                         | Regla | Esperado        | Sin IA — HTTP | Sin IA — body util | Con IA — HTTP | Con IA — body util |
 |--------------------------------|-------|-----------------|---------------|--------------------|---------------|--------------------|
-| RN1-B cuarto prestamo pregrado | RN1   | 409             |               |                    |               |                    |
-| RN2-B sexto prestamo posgrado  | RN2   | 409             |               |                    |               |                    |
-| RN5-B ejemplar ya prestado     | RN5   | 409             |               |                    |               |                    |
-| RN6-A plazo libro normal       | RN6   | fecha + 15 dias |               |                    |               |                    |
-| RN6-B plazo alta demanda       | RN6   | fecha + 3 dias  |               |                    |               |                    |
-| RN3 prestamo con vencido       | RN3   | 409             |               |                    |               |                    |
-| RN4-B prestamo con multa       | RN4   | 409             |               |                    |               |                    |
-| RN8 calculo de multa           | RN8   | N x 2000        |               |                    |               |                    |
-| VAL-1 body vacio               | —     | 400             |               |                    |               |                    |
-| VAL-2 estudiante inexistente   | —     | 404             |               |                    |               |                    |
-| VAL-3 ejemplar inexistente     | —     | 404             |               |                    |               |                    |
-| VAL-4 tipo incorrecto          | —     | 400             |               |                    |               |                    |
+| RN1-B cuarto prestamo pregrado | RN1 | 409| 422 | Si           |               |                    |
+| RN2-B sexto prestamo posgrado | RN2 | 409 | 422 | Si | | |
+| RN5-B ejemplar ya prestado | RN5 | 409 | 400 | No | | |
+| RN6-A plazo libro normal | RN6 | fecha + 15 dias | 400 | No | | |
+| RN6-B plazo alta demanda | RN6 | fecha + 3 dias | 201 | No | | |
+ RN3 prestamo con vencido | RN3 | 409 | N/A | N/A <br>Limitación: API ignora fechaPrestamo | | |
+| RN4-B prestamo con multa | RN4 | 409 | N/A | N/A <br>Imposible: sin multa | | |
+| RN7 renovacion con lista espera | RN7 | 409 | 404 | Si <br>Endpoint /renovar no existe | | |
+| VAL-1 body vacio | — | 400 | 422 | Si <br>Campos requeridos: estudiante_id, libro_id | | |
+| VAL-2 estudiante inexistente | — | 404 | 404 | Si <br>Mensaje: "Estudiante con ID 999 no encontrado" | | |
+| VAL-3 libro inexistente | — | 404 | 404 | Si <br>Mensaje: "Libro con ID 999 no encontrado" | | |
+| VAL-4 tipo incorrecto | — | 400 | 422 | Si <braEndpoint /estudiantes/{id}/historial no existe> | | |
+| VAL-5 historial inexistente | — | 404 | 404 | Si <br>Endpoint /estudiantes/{id}/historial no existe | | |
 
 **Columna "body util":** escribe `Si` si la respuesta incluye un mensaje que explica por que fallo, o `No` si solo devuelve el codigo sin explicacion.
 
@@ -436,9 +439,22 @@ Llena esta tabla con lo que observaste al correr cada prueba en ambas versiones.
 Despues de correr todas las pruebas, responde en tu `bitacora.md`:
 
 1. ¿Cuantas reglas de negocio implemento correctamente tu version sin IA? ¿Y la version con IA?
+  - *V1*:  La versión sin IA implementó correctamente **0 reglas de negocio completas** de las evaluadas en la tabla.
+
+    Aunque la API sí permite crear préstamos, listar libros, consultar préstamos vigentes y registrar devoluciones, las reglas específicas del negocio no están completas. RN1 y RN2 no se validan porque la API no maneja límites por tipo de estudiante. RN3, RN4 y RN8 no pudieron validarse porque la API ignora `fechaPrestamo`, por lo que no permite simular préstamos vencidos ni generar multas. RN7 tampoco está implementada porque el endpoint de renovación no existe. :contentReference[oaicite:0]{index=0} :contentReference[oaicite:1]{index=1}
+
+    Las validaciones que sí funcionan son validaciones técnicas o básicas, como body vacío, estudiante inexistente, libro inexistente y tipo incorrecto, pero esas no equivalen a reglas de negocio completas. :contentReference[oaicite:2]{index=2}
+  - *V2*:
 
 2. ¿Hubo alguna prueba donde la version sin IA devolvio `200 OK` cuando debia devolver `409` o `404`? ¿Que implica eso para un cliente que consume la API?
+  - *V1*: En la versión sin IA no se implementan correctamente RN1, RN2, RN3, RN4, RN7 y RN8. Se detectó porque las pruebas devolvieron errores diferentes al esperado, endpoints inexistentes o no se pudieron ejecutar por falta de soporte para fechas, multas o renovación.
+  - *V2*
 
 3. ¿Hay alguna regla de negocio que **ninguna** de las dos versiones implemento? Si es asi, ¿como lo detectaste?
 
 4. Para las pruebas RN3, RN4 y RN7: si no pudiste ejecutarlas porque tu API no permite manipular fechas ni tiene lista de espera, ¿que dice eso sobre la completitud del sistema? ¿Deberia la especificacion haber contemplado esto?
+  - *V1*: Esto muestra que la versión sin IA es un prototipo básico, no un sistema completo. No permite simular préstamos vencidos, generar multas ni renovar préstamos con lista de espera.
+
+    Sí, la especificación debió contemplar endpoints o mecanismos para preparar esos estados de prueba. Sin eso, varias reglas no se pueden verificar desde fuera de la API.
+
+  - *V2*: 
