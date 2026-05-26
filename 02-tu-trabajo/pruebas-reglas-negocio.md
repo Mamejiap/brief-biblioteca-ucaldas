@@ -11,7 +11,7 @@ Ejecuta estas pruebas contra **las dos versiones de tu proyecto**: la que genera
 
 ```bash
 # Version sin IA (o proyecto-v1 del analisis)
-BASE_SIN_IA="http://localhost:3000"
+BASE_SIN_IA="http://localhost:8000"
 
 # Version con IA (proyecto generado en Etapa 2)
 BASE_CON_IA="http://localhost:3001"
