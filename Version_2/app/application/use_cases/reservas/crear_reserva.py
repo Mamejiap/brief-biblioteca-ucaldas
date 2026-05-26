@@ -1,6 +1,6 @@
 """
 Caso de uso: Crear Reserva (lista de espera)
-Un estudiante solicita un libro que actualmente está prestado.
+Un estudiante solicita un libro que actualmente esta prestado.
 """
 import uuid
 from dataclasses import dataclass
@@ -41,7 +41,6 @@ class CrearReserva:
         if not self._libro_repo.existe(data.libro_id):
             raise LibroNoEncontrado(data.libro_id)
 
-        # Evitar reservas duplicadas del mismo estudiante para el mismo libro
         if self._reserva_repo.existe_reserva_pendiente(data.estudiante_id, data.libro_id):
             raise ReservaDuplicada(data.estudiante_id, data.libro_id)
 
@@ -52,4 +51,5 @@ class CrearReserva:
             fecha_reserva=date.today(),
             estado=EstadoReserva.PENDIENTE,
         )
-        return self._reserva_repo.guardar(reserva)
+        self._reserva_repo.guardar(reserva)
+        return reserva

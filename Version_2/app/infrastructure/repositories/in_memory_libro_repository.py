@@ -1,5 +1,5 @@
 from typing import Optional
-from app.domain.entities.libro import Libro, Ejemplar
+from app.domain.entities.libro import Libro, Ejemplar, EstadoEjemplar
 from app.domain.repositories.libro_repository import ILibroRepository, IEjemplarRepository
 
 

@@ -13,9 +13,9 @@ class EstadoReserva(str, Enum):
 class Reserva:
     """
     Representa la solicitud de un estudiante para reservar un libro
-    que actualmente está prestado.  La reserva es sobre el LIBRO
+    que actualmente esta prestado. La reserva es sobre el LIBRO
     (no sobre un ejemplar concreto), de modo que cualquier ejemplar
-    del libro puede satisfacerla cuando esté disponible.
+    del libro puede satisfacerla cuando este disponible.
     """
     id: str
     estudiante_id: str

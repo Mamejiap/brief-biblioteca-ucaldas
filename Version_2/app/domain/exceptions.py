@@ -116,3 +116,6 @@ class RecursoYaExiste(DomainException):
         self.recurso = recurso
         self.id_ = id_
         super().__init__(f"{recurso} con id '{id_}' ya existe.")
+        self.recurso = recurso
+        self.id_ = id_
+        super().__init__(f"{recurso} con id '{id_}' ya existe.")

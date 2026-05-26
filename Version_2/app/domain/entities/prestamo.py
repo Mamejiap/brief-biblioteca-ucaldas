@@ -21,7 +21,7 @@ class Prestamo:
     fecha_devolucion_real: Optional[date] = field(default=None)
 
     def esta_vencido(self, hoy: Optional[date] = None) -> bool:
-        """Determina si el préstamo está vencido respecto a una fecha dada."""
+        """Determina si el prestamo esta vencido respecto a una fecha dada."""
         referencia = hoy or date.today()
         return (
             self.estado == EstadoPrestamo.ACTIVO
@@ -29,7 +29,7 @@ class Prestamo:
         )
 
     def dias_retraso(self, hoy: Optional[date] = None) -> int:
-        """Días de retraso al momento de la devolución (0 si no hay retraso)."""
+        """Dias de retraso al momento de la devolucion (0 si no hay retraso)."""
         referencia = hoy or date.today()
         if referencia > self.fecha_devolucion_esperada:
             return (referencia - self.fecha_devolucion_esperada).days
