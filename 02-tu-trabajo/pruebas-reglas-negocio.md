@@ -17,15 +17,13 @@ BASE_SIN_IA="http://localhost:8000"
 BASE_CON_IA="http://localhost:3001"
 ```
 
-> **Nota:** si tus endpoints usan rutas distintas a las de este archivo (por ejemplo `/prestamos` en lugar de `/api/prestamos`), ajusta la ruta en cada comando. Lo importante es el comportamiento, no el nombre exacto de la ruta.
-
 ---
 
 ## Paso 0 — Verificar que ambos servidores responden
 
 ```bash
-curl -s $BASE_SIN_IA/
-curl -s $BASE_CON_IA/
+curl.exe -i http://localhost:8000/
+curl -i $BASE_CON_IA/
 ```
 
 Ambos deben devolver alguna respuesta (200 o similar). Si alguno no responde, no continúes con esa version hasta resolverlo.
@@ -42,7 +40,7 @@ Estos datos son la base para todas las pruebas siguientes. Ejecutalos contra **c
 
 ```bash
 # Estudiante de pregrado
-curl -s -X POST $BASE_CON_IA/api/estudiantes \
+curl -s -X POST $BASE_CON_IA/estudiantes \
   -H "Content-Type: application/json" \
   -d '{
     "id": "EST-PRE-01",
@@ -53,7 +51,7 @@ curl -s -X POST $BASE_CON_IA/api/estudiantes \
   }' | jq
 
 # Estudiante de posgrado
-curl -s -X POST $BASE_CON_IA/api/estudiantes \
+curl -s -X POST $BASE_CON_IA/estudiantes \
   -H "Content-Type: application/json" \
   -d '{
     "id": "EST-POS-01",
@@ -70,7 +68,7 @@ curl -s -X POST $BASE_CON_IA/api/estudiantes \
 
 ```bash
 # Libro normal (plazo 15 dias)
-curl -s -X POST $BASE_CON_IA/api/libros \
+curl -s -X POST $BASE_CON_IA/libros \
   -H "Content-Type: application/json" \
   -d '{
     "id": "LIB-001",
@@ -81,7 +79,7 @@ curl -s -X POST $BASE_CON_IA/api/libros \
   }' | jq
 
 # Libro de alta demanda (plazo 3 dias)
-curl -s -X POST $BASE_CON_IA/api/libros \
+curl -s -X POST $BASE_CON_IA/libros \
   -H "Content-Type: application/json" \
   -d '{
     "id": "LIB-002",
@@ -93,13 +91,13 @@ curl -s -X POST $BASE_CON_IA/api/libros \
 
 # Ejemplares del libro normal
 for i in 01 02 03 04 05 06; do
-  curl -s -X POST $BASE_CON_IA/api/libros/LIB-001/ejemplares \
+  curl -s -X POST $BASE_CON_IA/libros/LIB-001/ejemplares \
     -H "Content-Type: application/json" \
     -d "{\"id\": \"EJ-001-$i\"}" | jq
 done
 
 # Ejemplar del libro de alta demanda
-curl -s -X POST $BASE_CON_IA/api/libros/LIB-002/ejemplares \
+curl -s -X POST $BASE_CON_IA/libros/LIB-002/ejemplares \
   -H "Content-Type: application/json" \
   -d '{"id": "EJ-002-01"}' | jq
 ```
@@ -116,17 +114,17 @@ curl -s -X POST $BASE_CON_IA/api/libros/LIB-002/ejemplares \
 
 ```bash
 # Prestamo 1
-curl -s -X POST $BASE_CON_IA/api/prestamos \
+curl -s -X POST $BASE_CON_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-001-01"}' | jq
 
 # Prestamo 2
-curl -s -X POST $BASE_CON_IA/api/prestamos \
+curl -s -X POST $BASE_CON_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-001-02"}' | jq
 
 # Prestamo 3
-curl -s -X POST $BASE_CON_IA/api/prestamos \
+curl -s -X POST $BASE_CON_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-001-03"}' | jq
 ```
@@ -136,7 +134,7 @@ curl -s -X POST $BASE_CON_IA/api/prestamos \
 ### Prueba RN1-B: intentar el cuarto prestamo (debe fallar)
 
 ```bash
-curl -s -X POST $BASE_CON_IA/api/prestamos \
+curl -s -X POST $BASE_CON_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-001-04"}' | jq
 ```
@@ -165,7 +163,7 @@ HTTP 409 Conflict
 
 ```bash
 for i in 01 02 03 04 05; do
-  curl -s -X POST $BASE_CON_IA/api/prestamos \
+  curl -s -X POST $BASE_CON_IA/prestamos \
     -H "Content-Type: application/json" \
     -d "{\"estudianteId\": \"EST-POS-01\", \"ejemplarId\": \"EJ-001-0$i\"}" | jq
 done
@@ -176,7 +174,7 @@ done
 ### Prueba RN2-B: intentar el sexto prestamo (debe fallar)
 
 ```bash
-curl -s -X POST $BASE_CON_IA/api/prestamos \
+curl -s -X POST $BASE_CON_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-POS-01", "ejemplarId": "EJ-001-06"}' | jq
 ```
@@ -194,7 +192,7 @@ curl -s -X POST $BASE_CON_IA/api/prestamos \
 ### Prueba RN5-A: crear prestamo del ejemplar (debe funcionar)
 
 ```bash
-curl -s -X POST $BASE_CON_IA/api/prestamos \
+curl -s -X POST $BASE_CON_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-POS-01", "ejemplarId": "EJ-002-01"}' | jq
 ```
@@ -204,7 +202,7 @@ curl -s -X POST $BASE_CON_IA/api/prestamos \
 ### Prueba RN5-B: intentar prestar el mismo ejemplar (debe fallar)
 
 ```bash
-curl -s -X POST $BASE_CON_IA/api/prestamos \
+curl -s -X POST $BASE_CON_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-002-01"}' | jq
 ```
@@ -220,7 +218,7 @@ curl -s -X POST $BASE_CON_IA/api/prestamos \
 ### Prueba RN6-A: prestamo de libro normal
 
 ```bash
-curl -s -X POST $BASE_CON_IA/api/prestamos \
+curl -s -X POST $BASE_CON_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-POS-01", "ejemplarId": "EJ-001-01"}' | jq '.fechaDevolucion, .plazo'
 ```
@@ -232,7 +230,7 @@ curl -s -X POST $BASE_CON_IA/api/prestamos \
 ```bash
 # Primero libera EJ-002-01 si sigue prestado
 # Luego:
-curl -s -X POST $BASE_CON_IA/api/prestamos \
+curl -s -X POST $BASE_CON_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-POS-01", "ejemplarId": "EJ-002-01"}' | jq '.fechaDevolucion, .plazo'
 ```
@@ -265,7 +263,7 @@ Compara el resultado con lo que devolvio la API.
 >
 > **Opcion A** — Si tu API acepta fecha de prestamo en el body:
 > ```bash
-> curl -s -X POST $BASE_CON_IA/api/prestamos \
+> curl -s -X POST $BASE_CON_IA/prestamos \
 >   -H "Content-Type: application/json" \
 >   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-001-01", "fechaPrestamo": "2025-01-01"}' | jq
 > ```
@@ -280,7 +278,7 @@ Compara el resultado con lo que devolvio la API.
 Una vez que tengas un prestamo vencido registrado para EST-PRE-01:
 
 ```bash
-curl -s -X POST $BASE_CON_IA/api/prestamos \
+curl -s -X POST $BASE_CON_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-001-05"}' | jq
 ```
@@ -299,7 +297,7 @@ curl -s -X POST $BASE_CON_IA/api/prestamos \
 
 ```bash
 # Registrar devolucion de un prestamo vencido
-curl -s -X PUT $BASE_CON_IA/api/prestamos/ID_DEL_PRESTAMO/devolucion \
+curl -s -X PUT $BASE_CON_IA/prestamos/ID_DEL_PRESTAMO/devolucion \
   -H "Content-Type: application/json" | jq '.multa'
 ```
 
@@ -308,7 +306,7 @@ curl -s -X PUT $BASE_CON_IA/api/prestamos/ID_DEL_PRESTAMO/devolucion \
 ### Prueba RN4-B: intento de prestamo con multa pendiente (debe fallar)
 
 ```bash
-curl -s -X POST $BASE_CON_IA/api/prestamos \
+curl -s -X POST $BASE_CON_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "EJ-001-05"}' | jq
 ```
@@ -325,7 +323,7 @@ Si lograste simular fechas vencidas, verifica el calculo:
 
 ```bash
 # Registrar devolucion de prestamo vencido X dias
-curl -s -X PUT $BASE_CON_IA/api/prestamos/ID_DEL_PRESTAMO/devolucion \
+curl -s -X PUT $BASE_CON_IA/prestamos/ID_DEL_PRESTAMO/devolucion \
   -H "Content-Type: application/json" | jq
 ```
 
@@ -348,7 +346,7 @@ curl -s -X PUT $BASE_CON_IA/api/prestamos/ID_DEL_PRESTAMO/devolucion \
 
 ```bash
 # Intentar renovar un prestamo que tiene otro estudiante en espera
-curl -s -X PUT $BASE_CON_IA/api/prestamos/ID_DEL_PRESTAMO/renovar \
+curl -s -X PUT $BASE_CON_IA/prestamos/ID_DEL_PRESTAMO/renovar \
   -H "Content-Type: application/json" | jq
 ```
 
@@ -363,7 +361,7 @@ Estas pruebas verifican que tu API maneja correctamente las entradas malformadas
 ### VAL-1: Body vacio
 
 ```bash
-curl -s -X POST $BASE_CON_IA/api/prestamos \
+curl -s -X POST $BASE_CON_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{}' | jq
 ```
@@ -373,7 +371,7 @@ curl -s -X POST $BASE_CON_IA/api/prestamos \
 ### VAL-2: Estudiante inexistente
 
 ```bash
-curl -s -X POST $BASE_CON_IA/api/prestamos \
+curl -s -X POST $BASE_CON_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "NO-EXISTE-999", "ejemplarId": "EJ-001-01"}' | jq
 ```
@@ -383,7 +381,7 @@ curl -s -X POST $BASE_CON_IA/api/prestamos \
 ### VAL-3: Ejemplar inexistente
 
 ```bash
-curl -s -X POST $BASE_CON_IA/api/prestamos \
+curl -s -X POST $BASE_CON_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "EST-PRE-01", "ejemplarId": "NO-EXISTE-999"}' | jq
 ```
@@ -393,7 +391,7 @@ curl -s -X POST $BASE_CON_IA/api/prestamos \
 ### VAL-4: Tipo de dato incorrecto
 
 ```bash
-curl -s -X POST $BASE_CON_IA/api/prestamos \
+curl -s -X POST $BASE_CON_IA/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": 12345, "ejemplarId": true}' | jq
 ```
@@ -403,7 +401,7 @@ curl -s -X POST $BASE_CON_IA/api/prestamos \
 ### VAL-5: Consultar prestamos de estudiante inexistente
 
 ```bash
-curl -s $BASE_CON_IA/api/estudiantes/NO-EXISTE-999/historial | jq
+curl -s $BASE_CON_IA/estudiantes/NO-EXISTE-999/historial | jq
 ```
 
 **Resultado esperado:** `404 Not Found`.

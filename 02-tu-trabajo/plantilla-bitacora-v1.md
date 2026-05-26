@@ -150,27 +150,55 @@
 
 ### Primera ejecución
 
-- **Tests totales:** [N]
-- **Pasaron:** [N]
-- **Fallaron:** [N]
+- **Tests totales:** 0
+- **Pasaron:** 0
+- **Fallaron:** 0
+
+**Nota:** En la versión 1 no se encontraron tests automatizados. El proyecto incluye ejemplos de prueba manual con `curl`, Swagger UI, REST Client y Postman, pero no contiene archivos de prueba ni una suite ejecutable con `pytest`.
 
 ### Análisis de los fallos
 
 | Test | Tipo de fallo | ¿Bug del código o test mal escrito? | Acción tomada |
 |---|---|---|---|
-| `test_RN1_...` | AssertionError | Bug del código | Anotado como H6 |
-| `test_RN2_...` | TypeError | Test mal escrito (campo mal nombrado) | Corregí el test |
-| ... | | | |
+| No aplica | No se ejecutaron tests automatizados | No aplica | Se realizó auditoría humana del código y se documentaron hallazgos H1-H6. |
 
 ### Última ejecución (post-correcciones)
 
-- **Tests totales:** [N]
-- **Pasaron:** [N]
-- **Fallaron:** [N — si quedó alguno, declarar abajo]
+- **Tests totales:** 0
+- **Pasaron:** 0
+- **Fallaron:** 0
+
+**Nota:** No hubo una última ejecución de tests porque no se crearon ni ejecutaron pruebas automatizadas en esta versión.
 
 ### Tests rojos declarados (bugs no corregidos por tiempo)
 
-- [Lista de bugs que documentaste pero no alcanzaste a corregir, con justificación]
+No hubo tests rojos, porque no existía una suite de pruebas automatizadas. Sin embargo, quedaron documentados como bugs pendientes los siguientes hallazgos:
+- **H1:** No se valida el límite de préstamos por tipo de estudiante.
+- **H2:** No se bloquean nuevos préstamos cuando el estudiante tiene préstamos vencidos.
+- **H3:** La disponibilidad se maneja por cantidad de libros, no por ejemplar individual.
+- **H4:** La duración del préstamo no se calcula según si el libro es de alta demanda.
+- **H5:** La devolución no calcula multas por retraso.
+- **H6:** Faltan endpoints para renovación, préstamos vencidos e historial por estudiante.
+
+## Sección Pruebas de reglas de negocio
+
+- ¿Que codigo HTTP devolvio tu version sin IA?
+
+- ¿Cual de las dos incluye un mensaje de error legible?
+  En la version 1 que es con un prompt debil
+- ¿El cuerpo de la respuesta identifica por que fallo?
+
+## Preguntas de reflexion
+
+
+1. ¿Cuantas reglas de negocio implemento correctamente tu version sin IA?
+
+2. ¿Hubo alguna prueba donde la version sin IA devolvio `200 OK` cuando debia devolver `409` o `404`? ¿Que implica eso para un cliente que consume la API?
+
+3. ¿Hay alguna regla de negocio que **ninguna** de las dos versiones implemento? Si es asi, ¿como lo detectaste?
+
+4. Para las pruebas RN3, RN4 y RN7: si no pudiste ejecutarlas porque tu API no permite manipular fechas ni tiene lista de espera, ¿que dice eso sobre la completitud del sistema? ¿Deberia la especificacion haber contemplado esto?
+
 
 ---
 

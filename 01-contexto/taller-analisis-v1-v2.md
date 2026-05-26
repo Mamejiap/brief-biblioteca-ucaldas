@@ -6,8 +6,8 @@
 
 Durante este taller trabajarás con dos versiones de la misma API REST para gestión de préstamos de una biblioteca universitaria.
 
-- **`proyecto-v1`** — Implementación simple en JavaScript con Express o . Sin validaciones formales, sin arquitectura en capas, sin tests.
-- **`proyecto-v2`** — Implementación en TypeScript con Clean Architecture, validaciones con Zod, manejo de errores tipado y suite completa de tests unitarios e integración.
+- **`version_1`** — Implementación simple en Python con FastAPI. Sin validaciones formales, sin arquitectura en capas, sin tests.
+- **`version_2`** — Implementación en Python con Clean Architecture, validaciones con Pydantic, manejo de errores tipado y suite completa de tests unitarios e integración.
 
 El objetivo no es determinar cuál versión es "mejor", sino comprender qué impacto tiene la estructura del código sobre la capacidad de probarlo.
 
@@ -19,22 +19,30 @@ Levanta ambos servidores en terminales separadas:
 
 ```bash
 # Terminal 1
-cd proyecto-v1
-node src/index.js
+cd version_1
+py main.py
 ```
 
 ```bash
 # Terminal 2
-cd proyecto-v2
-npm run dev
+cd version_2
+uvicorn app.main:app --reload
 ```
 
 Verifica que ambos respondan:
 
 ```bash
-curl http://localhost:3000/
-curl http://localhost:3001/
+curl http://localhost:8000/
+curl http://localhost:8001/
 ```
+
+También puedes revisar la documentación automática en el navegador:
+
+```
+V1: http://localhost:8000/docs
+V2: http://localhost:8001/docs
+```
+
 
 ---
 
@@ -75,7 +83,7 @@ Localiza la **RN1: límite de préstamos simultáneos por tipo de estudiante** e
 Ejecuta el siguiente comando contra **v1**:
 
 ```bash
-curl -s -X POST http://localhost:3000/api/prestamos \
+curl -s -X POST http://localhost:8000/prestamos \
   -H "Content-Type: application/json" \
   -d '{"estudianteId": "NO-EXISTE", "ejemplarId": "abc"}' | jq
 ```
